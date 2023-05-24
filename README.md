@@ -1,4 +1,4 @@
-﻿# ValueObject
+﻿# MyValueObject with fluent validation approach
 
 ## Working in repository
 
