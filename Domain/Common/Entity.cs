@@ -1,8 +1,18 @@
 ﻿namespace Domain.Common
 {
-    public abstract class Entity
+    public abstract class Entity : EqualityComparer<Entity>
     {
         public virtual long Id { get; protected set; }
+
+        protected static bool EqualOperator(Entity? left, Entity? right)
+        {
+            if (left is null && right is null)
+                return true;
+            else if (left is null || right is null)
+                return false;
+
+            return left.Equals(right);
+        }
 
         public override bool Equals(object? obj)
         {
@@ -19,6 +29,11 @@
                 return false;
 
             return Id == other.Id;
+        }
+
+        public override bool Equals(Entity? left, Entity? right)
+        {
+            return EqualOperator(left, right);
         }
 
         public static bool operator ==(Entity? a, Entity? b)
@@ -40,6 +55,11 @@
         public override int GetHashCode()
         {
             return (GetType().ToString() + Id).GetHashCode();
+        }
+
+        public override int GetHashCode(Entity entity)
+        {
+            return entity.GetHashCode();
         }
     }
 }
