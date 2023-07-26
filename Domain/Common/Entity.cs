@@ -54,12 +54,17 @@
 
         public override int GetHashCode()
         {
-            return (GetType().ToString() + Id).GetHashCode();
+            return GetHashSource(this).GetHashCode();
         }
 
         public override int GetHashCode(Entity entity)
         {
-            return entity.GetHashCode();
+            return GetHashSource(entity).GetHashCode();
+        }
+
+        private string GetHashSource(Entity entity)
+        {
+            return entity.GetType().ToString() + Id;
         }
     }
 }

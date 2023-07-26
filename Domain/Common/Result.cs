@@ -7,11 +7,11 @@ namespace Domain.Common
     {
         private readonly ResultCommonLogic<string> _logic;
 
-        public bool IsFailure => _logic.IsFailure;
+        public readonly bool IsFailure => _logic.IsFailure;
 
-        public bool IsSuccess => _logic.IsSuccess;
+        public readonly bool IsSuccess => _logic.IsSuccess;
 
-        public string Error => _logic.Error;
+        public readonly string Error => _logic.Error;
 
         private Result(SerializationInfo info, StreamingContext context)
         {
