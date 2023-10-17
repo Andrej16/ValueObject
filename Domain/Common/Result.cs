@@ -3,7 +3,7 @@
 namespace Domain.Common
 {
     [Serializable]
-    public struct Result : IResult, ISerializable
+    public readonly struct Result : IResult, ISerializable
     {
         private readonly ResultCommonLogic<string> _logic;
 
@@ -35,7 +35,7 @@ namespace Domain.Common
     }
 
     [Serializable]
-    public struct Result<T, E> : IResult<T, E>, IResult, IValue<T>, IError<E>, ISerializable
+    public readonly struct Result<T, E> : IResult<T, E>, IResult, IValue<T>, IError<E>, ISerializable
     {
         private readonly ResultCommonLogic<E> _logic;
 
