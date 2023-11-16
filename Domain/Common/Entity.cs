@@ -2,7 +2,7 @@
 {
     public abstract class Entity : EqualityComparer<Entity>
     {
-        public virtual long Id { get; protected set; }
+        public virtual int Id { get; protected set; }
 
         protected static bool EqualOperator(Entity? left, Entity? right)
         {
