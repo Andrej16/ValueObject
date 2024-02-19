@@ -2,7 +2,7 @@
 using MediatR;
 using Persistence.Context;
 
-namespace Api.Commands
+namespace Api.Commands.Products
 {
     public class CreateProduct
     {

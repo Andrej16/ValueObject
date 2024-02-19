@@ -41,5 +41,10 @@ namespace Domain.Aggregates
 
             return new Address(street, city, stateObject, zipCode);
         }
+
+        public override string ToString()
+        {
+            return $"Address - {State}, {City}, {Street}, {ZipCode}"; 
+        }
     }
 }

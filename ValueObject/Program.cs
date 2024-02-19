@@ -1,4 +1,4 @@
-using Api.Commands;
+using Api.Commands.Products;
 using Api.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

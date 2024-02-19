@@ -1,4 +1,4 @@
-using Api.Commands;
+using Api.Commands.Products;
 using ProductsApi.IntegrationTests.Core;
 
 namespace ProductsApi.IntegrationTests
