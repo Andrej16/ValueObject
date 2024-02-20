@@ -33,6 +33,26 @@ namespace Api.Controllers
             return Ok2(state.Value);
         }
 
+        [HttpPut("test-warning")]
+        public async Task<IActionResult> CreateState2Async(
+            string name, CancellationToken cancellation)
+        {
+            string[] allStates = { "AA", "BB", "CC" };
+            Result<State, Error> state = State.Create(name, allStates);
+
+            if (state.IsFailure)
+            {
+                return BadRequest(state.Error);
+            }
+
+            if (state.HasWarning)
+            {
+                return Ok(new { State = state.Value, state.Warning });
+            }
+
+            return Ok(state.Value);
+        }
+
         [HttpGet]
         public async Task<ActionResult<Envelope<State>>> GetErrorAsync(
             string name, CancellationToken cancellation)

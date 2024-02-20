@@ -22,7 +22,7 @@ namespace Domain.Aggregates
                 return Errors.General.InvalidLength(nameof(name));
 
             if (allStates.Any(x => x == name) == false)
-                return Errors.Student.InvalidState(name);
+                return (new State(name), "Unknown state");
 
             return new State(name);
         }

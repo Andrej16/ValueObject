@@ -4,25 +4,15 @@ namespace Domain.Common
 {
     internal readonly struct ResultCommonLogic<E>
     {
-        internal static class Messages
-        {            
-            public static readonly string ValueIsInaccessibleForFail = "You attempted to access the Value property for a unsuccessful result. A unsuccessful result has no Value.";
-
-            public static readonly string ErrorObjectIsNotProvidedForFailure = "You attempted to create a failure result, which must have an error, but a null error object (or empty string) was passed to the constructor.";
-
-            public static readonly string ErrorObjectIsProvidedForSuccess = "You attempted to create a success result, which cannot have an error, but a non-null error object was passed to the constructor.";
-
-            public static string ValueIsInaccessibleForFailure(string error)
-            {
-                return "You attempted to access the Value property for a failed result. A failed result has no Value. The error was: " + error;
-            }
-        }
+        private readonly string? _warning;
 
         private readonly E? _error;
 
         public bool IsFailure { get; }
 
         public bool IsSuccess => !IsFailure;
+
+        public bool HasWarning => IsSuccess && _warning != null;
 
         public E Error
         {
@@ -37,18 +27,49 @@ namespace Domain.Common
             }
         }
 
+        public string? Warning
+        {
+            get
+            {
+                if (IsFailure)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return _warning;
+            }
+        }
+        
+        public ResultCommonLogic(string warning)
+        {
+            if (string.IsNullOrWhiteSpace(warning))
+            {
+                throw new ArgumentException(
+                    Result.Messages.WarningIsNotProvidedForSuccess, 
+                    nameof(warning));
+            }
+
+            IsFailure = false;
+            _error = default(E);
+            _warning = warning;
+        }
+
         public ResultCommonLogic(bool isFailure, E? error)
         {
             if (isFailure)
             {
                 if (error == null || (error is string && error.Equals(string.Empty)))
                 {
-                    throw new ArgumentNullException("error", Messages.ErrorObjectIsNotProvidedForFailure);
+                    throw new ArgumentNullException(
+                        nameof(error), 
+                        Result.Messages.ErrorObjectIsNotProvidedForFailure);
                 }
             }
             else if (!EqualityComparer<E>.Default.Equals(error, default))
             {
-                throw new ArgumentException(Messages.ErrorObjectIsProvidedForSuccess, "error");
+                throw new ArgumentException(
+                    Result.Messages.ErrorObjectIsProvidedForSuccess, 
+                    nameof(error));
             }
 
             IsFailure = isFailure;

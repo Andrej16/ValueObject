@@ -5,6 +5,23 @@ namespace Domain.Common
     [Serializable]
     public readonly struct Result : IResult, ISerializable
     {
+        //ToDo: Move raw strings to resources
+        internal static class Messages
+        {
+            public static readonly string ValueIsInaccessibleForFail = "You attempted to access the Value property for a unsuccessful result. A unsuccessful result has no Value.";
+
+            public static readonly string ErrorObjectIsNotProvidedForFailure = "You attempted to create a failure result, which must have an error, but a null error object (or empty string) was passed to the constructor.";
+
+            public static readonly string WarningIsNotProvidedForSuccess = "You attempted to create a success result, which must have a warning, but a null or empty string warning was passed to the constructor."; 
+
+            public static readonly string ErrorObjectIsProvidedForSuccess = "You attempted to create a success result, which cannot have an error, but a non-null error object was passed to the constructor.";
+
+            public static string ValueIsInaccessibleForFailure(string error)
+            {
+                return "You attempted to access the Value property for a failed result. A failed result has no Value. The error was: " + error;
+            }
+        }
+
         private readonly ResultCommonLogic<string> _logic;
 
         public readonly bool IsFailure => _logic.IsFailure;
@@ -28,83 +45,14 @@ namespace Domain.Common
             return new Result<T, E>(isFailure: false, default(E), value);
         }
 
+        public static Result<T, E> Warning<T, E>(T value, string warning)
+        {
+            return new Result<T, E>(value, warning);
+        }
+
         public static Result<T, E> Failure<T, E>(E error)
         {
             return new Result<T, E>(isFailure: true, error, default(T));
-        }
-    }
-
-    [Serializable]
-    public readonly struct Result<T, E> : IResult<T, E>, IResult, IValue<T>, IError<E>, ISerializable
-    {
-        private readonly ResultCommonLogic<E> _logic;
-
-        private readonly T? _value;
-
-        public bool IsFailure => _logic.IsFailure;
-
-        public bool IsSuccess => _logic.IsSuccess;
-
-        public E Error => _logic.Error;
-
-        public T Value
-        {
-            get
-            {
-                if (!IsSuccess)
-                {
-                    throw new Exception(ResultCommonLogic<string>.Messages.ValueIsInaccessibleForFail);
-                }
-
-                return _value!;
-            }
-        }
-
-        public override string ToString()
-        {
-            if (!IsSuccess)
-            {
-                return $"Failure({Error})";
-            }
-
-            return $"Success({Value})";
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            _logic.GetObjectData(info, this);
-        }
-
-        internal Result(bool isFailure, E? error, T? value)
-        {
-            _logic = new ResultCommonLogic<E>(isFailure, error);
-            _value = value;
-        }
-
-        public static implicit operator Result<T, E>(T value)
-        {
-            if (value is IResult<T, E> result)
-            {
-                E? error = result.IsFailure ? result.Error : default;
-                T? value2 = result.IsSuccess ? result.Value : default;
-
-                return new Result<T, E>(result.IsFailure, error, value2);
-            }
-
-            return Result.Success<T, E>(value);
-        }
-
-        public static implicit operator Result<T, E>(E error)
-        {
-            if (error is IResult<T, E> result)
-            {
-                E? error2 = result.IsFailure ? result.Error : default;
-                T? value = result.IsSuccess ? result.Value : default;
-
-                return new Result<T, E>(result.IsFailure, error2, value);
-            }
-
-            return Result.Failure<T, E>(error);
         }
     }
 }
