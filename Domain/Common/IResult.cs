@@ -4,12 +4,23 @@
     {
         bool IsFailure { get; }
 
+        bool HasWarning { get; }
+
         bool IsSuccess { get; }
+    }
+
+    public interface IError
+    {
+        string Code { get; }
+
+        string Message { get; }
     }
 
     public interface IValue<out T>
     {
         T Value { get; }
+
+        string? Warning { get; }
     }
 
     public interface IError<out E>

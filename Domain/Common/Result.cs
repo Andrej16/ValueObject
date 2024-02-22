@@ -26,6 +26,8 @@ namespace Domain.Common
 
         public readonly bool IsFailure => _logic.IsFailure;
 
+        public bool HasWarning => _logic.HasWarning;
+
         public readonly bool IsSuccess => _logic.IsSuccess;
 
         public readonly string Error => _logic.Error;
@@ -40,19 +42,25 @@ namespace Domain.Common
             _logic.GetObjectData(info);
         }
 
-        public static Result<T, E> Success<T, E>(T value)
+        public static Result<T, E> Success<T, E>(T value) where E : IError
         {
-            return new Result<T, E>(isFailure: false, default(E), value);
+            var result = new Result<T, E>(isFailure: false, default, value, default);
+
+            return result;
         }
 
-        public static Result<T, E> Warning<T, E>(T value, string warning)
+        public static Result<T, E> Warning<T, E>(T value, string warning) where E : IError
         {
-            return new Result<T, E>(value, warning);
+            var result = new Result<T, E>(isFailure: false, default, value, warning);
+
+            return result;
         }
 
-        public static Result<T, E> Failure<T, E>(E error)
+        public static Result<T, E> Failure<T, E>(E error) where E : IError
         {
-            return new Result<T, E>(isFailure: true, error, default(T));
+            var result = new Result<T, E>(isFailure: true, error, default, default);
+
+            return result;
         }
     }
 }

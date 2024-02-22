@@ -4,6 +4,7 @@ namespace Domain.Common
 {
     [Serializable]
     public readonly struct Result<T, E> : IResult<T, E>, IResult, IValue<T>, IError<E>, ISerializable
+        where E : IError
     {
         private readonly ResultCommonLogic<E> _logic;
 
@@ -32,15 +33,9 @@ namespace Domain.Common
             }
         }
 
-        public Result(T value, string warning)
+        public Result(bool isFailure, E? error, T? value, string? warning)
         {
-            _logic = new ResultCommonLogic<E>(warning);
-            _value = value;
-        }
-
-        public Result(bool isFailure, E? error, T? value)
-        {
-            _logic = new ResultCommonLogic<E>(isFailure, error);
+            _logic = new ResultCommonLogic<E>(isFailure, error, warning);
             _value = value;
         }
 
@@ -65,8 +60,9 @@ namespace Domain.Common
             {
                 E? error = result.IsFailure ? result.Error : default;
                 T? value2 = result.IsSuccess ? result.Value : default;
+                var warning = result.HasWarning ? result.Warning : default;
 
-                return new Result<T, E>(result.IsFailure, error, value2);
+                return new Result<T, E>(result.IsFailure, error, value2, warning);
             }
 
             return Result.Success<T, E>(value);
@@ -74,7 +70,7 @@ namespace Domain.Common
 
         public static implicit operator Result<T, E>((T Value, string Warning) valueWithWarning)
         {
-            return new Result<T, E>(valueWithWarning.Value, valueWithWarning.Warning);
+            return Result.Warning<T, E>(valueWithWarning.Value, valueWithWarning.Warning);
         }
 
         public static implicit operator Result<T, E>(E error)
@@ -84,7 +80,7 @@ namespace Domain.Common
                 E? error2 = result.IsFailure ? result.Error : default;
                 T? value = result.IsSuccess ? result.Value : default;
 
-                return new Result<T, E>(result.IsFailure, error2, value);
+                return new Result<T, E>(result.IsFailure, error2, value, default);
             }
 
             return Result.Failure<T, E>(error);

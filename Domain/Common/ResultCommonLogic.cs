@@ -40,21 +40,7 @@ namespace Domain.Common
             }
         }
         
-        public ResultCommonLogic(string warning)
-        {
-            if (string.IsNullOrWhiteSpace(warning))
-            {
-                throw new ArgumentException(
-                    Result.Messages.WarningIsNotProvidedForSuccess, 
-                    nameof(warning));
-            }
-
-            IsFailure = false;
-            _error = default(E);
-            _warning = warning;
-        }
-
-        public ResultCommonLogic(bool isFailure, E? error)
+        public ResultCommonLogic(bool isFailure, E? error, string? warning)
         {
             if (isFailure)
             {
@@ -74,15 +60,23 @@ namespace Domain.Common
 
             IsFailure = isFailure;
             _error = error;
+            _warning = warning;
         }
 
         public void GetObjectData(SerializationInfo info)
         {
             info.AddValue("IsFailure", IsFailure);
             info.AddValue("IsSuccess", IsSuccess);
+            info.AddValue("HasWarning", HasWarning);
+
             if (IsFailure)
             {
                 info.AddValue("Error", Error);
+            }
+
+            if (HasWarning)
+            {
+                info.AddValue("Warning", Warning);
             }
         }
 
@@ -92,6 +86,7 @@ namespace Domain.Common
             if (IsSuccess)
             {
                 info.AddValue("Value", valueResult.Value);
+                info.AddValue("Warning", valueResult.Warning);
             }
         }
 
@@ -101,13 +96,14 @@ namespace Domain.Common
 
             E? error = default;
             var value = info.GetValue("Error", typeof(E));
+            var warning = info.GetString("Warning");
 
             if (isFailure && value is not null)
             {
                 error = (E)value;
             }
 
-            return new ResultCommonLogic<E>(isFailure, error);
+            return new ResultCommonLogic<E>(isFailure, error, warning);
         }
     }
 }

@@ -26,9 +26,7 @@ namespace Api.Commands.Addresses
                 allStates);
 
             if (addressResult.IsFailure)
-            {
                 return addressResult.Error;
-            }
 
             return new CreateAddressResponse(addressResult.Value.Id, addressResult.Value.ToString());
         }
