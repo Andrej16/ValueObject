@@ -84,8 +84,8 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Envelope<CreateAddressResponse>>> CreateAddressAsync(
-            CreateAddressRequest request,
+        public async Task<ActionResult<Envelope<CreateAddressResponse>>> PostAddressAsync(
+            [FromQuery] CreateAddressRequest request,
             CancellationToken cancellation)
         {
             var command = new CreateAddressCommand(
