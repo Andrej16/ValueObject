@@ -1,4 +1,5 @@
-﻿using Api.Common;
+﻿using Api.Abstractions;
+using Api.Common;
 using Domain.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -23,7 +24,17 @@ namespace Api.Controllers
             return new EnvelopeResult<T>(Envelope<T>.Error(error), HttpStatusCode.BadRequest);
         }
 
-        protected ActionResult<Envelope<T>> FromResult<T>(Result<T, Error> result) where T : class
+        protected ActionResult<Envelope<T>> NoContent<T>(Result<T, Error> result) 
+            where T : class, INoContentViewModel
+        {
+            if (result.IsFailure)
+                return Error<T>(result.Error);
+
+            return StatusCode(result.Value.StatusCode);
+        }
+
+        protected ActionResult<Envelope<T>> FromResult<T>(Result<T, Error> result) 
+            where T : class
         {
             if (result.IsSuccess)
                 return Ok2(result.Value);
