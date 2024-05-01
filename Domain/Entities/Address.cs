@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 
-namespace Domain.Aggregates
+namespace Domain.Entities
 {
     public class Address : Entity
     {
@@ -44,7 +44,7 @@ namespace Domain.Aggregates
 
         public override string ToString()
         {
-            return $"Address - {State}, {City}, {Street}, {ZipCode}"; 
+            return $"Address - {State}, {City}, {Street}, {ZipCode}";
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Api.Controllers
         }
 
         protected ActionResult<Envelope<T>> NoContent<T>(Result<T, Error> result) 
-            where T : class, INoContentViewModel
+            where T : class, INoContent
         {
             if (result.IsFailure)
                 return Error<T>(result.Error);

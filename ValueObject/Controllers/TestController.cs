@@ -1,7 +1,7 @@
 ﻿using Api.Commands.Addresses;
 using Api.Common;
-using Domain.Aggregates;
 using Domain.Common;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

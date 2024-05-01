@@ -1,6 +1,6 @@
 ﻿namespace Api.Abstractions
 {
-    public interface INoContentViewModel
+    public interface INoContent
     {
         int StatusCode { get; init; }
     }

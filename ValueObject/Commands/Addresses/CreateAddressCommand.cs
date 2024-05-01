@@ -1,6 +1,6 @@
-﻿using Api.Abstractions;
-using Domain.Aggregates;
+﻿using Api.Behaviors;
 using Domain.Common;
+using Domain.Entities;
 
 namespace Api.Commands.Addresses
 {

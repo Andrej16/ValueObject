@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 
-namespace Domain.Aggregates
+namespace Domain.Entities
 {
     public class Product : Entity
     {
@@ -12,12 +12,12 @@ namespace Domain.Aggregates
 
         public DateTime CreatedOnUtc { get; set; }
 
-        public string? Info { get; set;}
+        public string? Info { get; set; }
 
         public static Product CreateDefault()
         {
-            var product = new Product() 
-            { 
+            var product = new Product()
+            {
                 Name = "Default Product",
                 Category = "Default Category",
                 Price = 0.00m,

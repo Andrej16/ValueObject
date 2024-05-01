@@ -1,4 +1,4 @@
-﻿using Domain.Aggregates;
+﻿using Domain.Entities;
 using MediatR;
 using Persistence.Context;
 

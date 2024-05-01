@@ -1,8 +1,8 @@
 ﻿using MediatR;
 
-namespace Api.Abstractions
+namespace Api.Behaviors
 {
-    public interface IQueryHandler<TQuery, TResponse> 
+    public interface IQueryHandler<TQuery, TResponse>
         : IRequestHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>
     {
     }

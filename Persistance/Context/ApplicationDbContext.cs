@@ -1,4 +1,4 @@
-﻿using Domain.Aggregates;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context.EntityConfigurations;
 

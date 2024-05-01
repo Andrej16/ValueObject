@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 
-namespace Domain.Aggregates
+namespace Domain.Entities
 {
     public class State : ValueObject
     {
