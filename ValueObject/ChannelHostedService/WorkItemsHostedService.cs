@@ -5,29 +5,33 @@ namespace Api.ChannelHostedService;
 
 public class WorkItemsHostedService : BackgroundService
 {
-    private readonly IBackgroundProcessorsFactory _processorsFactory;
     private readonly ITasksQueue _tasksQueue;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WorkItemsHostedService> _logger;
 
     public WorkItemsHostedService(
-        IBackgroundProcessorsFactory processorsFactory,
         ITasksQueue tasksQueue,
+        IServiceProvider serviceProvider,
         ILogger<WorkItemsHostedService> logger)
     {
-        _processorsFactory = processorsFactory;
         _tasksQueue = tasksQueue;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        using var scope = _serviceProvider.CreateScope();
+        var processorsFactory = scope.ServiceProvider.GetRequiredService<IBackgroundProcessorsFactory>();
 
-        while (await _tasksQueue.WaitToReadAsync(cancellationToken))
+        while (!cancellationToken.IsCancellationRequested)
         {
-            var workItem = _tasksQueue.Dequeue();
+            //Todo: transaction must envelope work items with the same taskId
+            //using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-            var processor = _processorsFactory.GetProcessor(workItem.Type);
+            var workItem = await _tasksQueue.DequeueAsync(cancellationToken);
+
+            var processor = processorsFactory.GetProcessor(workItem.Type);
 
             var operationResult = await processor.ProcessAsync(workItem, cancellationToken);
             if (operationResult.IsFailure)
@@ -42,7 +46,7 @@ public class WorkItemsHostedService : BackgroundService
             if (workItem.TaskId == nextWorkItemId)
                 continue;
 
-            transactionScope.Complete();
+            //transactionScope.Complete();
         }
     }
 }

@@ -12,39 +12,22 @@ public sealed class TasksQueue : ITasksQueue
         _channel = Channel.CreateUnbounded<WorkItem>();
     }
 
-    public void QueueBackgroundTask(BackgroundTask backgroundTask, CancellationToken cancellationToken)
+    public async Task QueueBackgroundTaskAsync(BackgroundTask backgroundTask, CancellationToken cancellationToken)
     {
         if (!backgroundTask.WorkItems.Any())
             throw new ArgumentException();
 
-        var tasks = new List<Task>();
         foreach (var workItem in backgroundTask.WorkItems)
         {
-            tasks.Add(QueueAsync(workItem, cancellationToken));
+            await _channel.Writer.WriteAsync(workItem, cancellationToken);
         }
-
-        Task.WaitAll([.. tasks], cancellationToken);
     }
 
-    public async Task QueueAsync(WorkItem workItem, CancellationToken cancellationToken)
+    public async Task<WorkItem> DequeueAsync(CancellationToken cancellationToken)
     {
-        await _channel.Writer.WriteAsync(workItem, cancellationToken);
-    }
+        var workItem = await _channel.Reader.ReadAsync(cancellationToken);
 
-    public async ValueTask<bool> WaitToReadAsync(CancellationToken cancellationToken)
-    {
-        if (cancellationToken.IsCancellationRequested)
-            return false;
-
-        return await _channel.Reader.WaitToReadAsync(cancellationToken);
-    }
-
-    public WorkItem Dequeue()
-    {
-        while (_channel.Reader.TryRead(out var work))
-            return work;
-
-        throw new InvalidOperationException("No work items available");
+        return workItem;
     }
 
     public Guid? GetNextId()

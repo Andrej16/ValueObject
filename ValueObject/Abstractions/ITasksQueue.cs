@@ -4,13 +4,9 @@ namespace Api.Abstractions;
 
 public interface ITasksQueue
 {
-    void QueueBackgroundTask(BackgroundTask backgroundTask, CancellationToken cancellationToken);
-    
-    Task QueueAsync(WorkItem workItem, CancellationToken cancellationToken);
-    
-    ValueTask<bool> WaitToReadAsync(CancellationToken cancellationToken);
+    Task QueueBackgroundTaskAsync(BackgroundTask backgroundTask, CancellationToken cancellationToken);
 
-    WorkItem Dequeue();
+    Task<WorkItem> DequeueAsync(CancellationToken cancellationToken);
 
     Guid? GetNextId();
 }

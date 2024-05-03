@@ -3,13 +3,13 @@ using Domain.Common;
 
 namespace Api.Processors
 {
-    public class TestWorkItemProcessor
+    public class TestWorkItemProcessor : WorkItemProcessor
     {
-        public async Task<Result<WorkItem, Error>> ProcessAsync(WorkItem work, CancellationToken cancellationToken)
+        public override async Task<Result<WorkItem, Error>> ProcessAsync(WorkItem work, CancellationToken cancellationToken)
         {
             await Task.Delay(1000, cancellationToken);
 
-            Console.WriteLine($"TestWorkItemProcessor.ProcessAsync: {work.TaskId}");
+            Console.WriteLine($"TestWorkItemProcessor.Process task with id: {work.TaskId}, and type {work.Type}");
 
             return work;
         }

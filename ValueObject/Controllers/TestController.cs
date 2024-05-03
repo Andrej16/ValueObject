@@ -1,4 +1,5 @@
 ﻿using Api.Commands.Addresses;
+using Api.Commands.TestChannelHostedService;
 using Api.Common;
 using Domain.Common;
 using Domain.Entities;
@@ -97,6 +98,17 @@ namespace Api.Controllers
             var responseResult = await _sender.Send(command, cancellation);
 
             return FromResult(responseResult);
+        }
+
+        [HttpPost("work-items")]
+        public async Task<ActionResult<Envelope<TestChannelHostedServiceResponse>>> PostWorkItems(
+            CancellationToken cancellationToken)
+        {
+            var command = new TestChannelHostedServiceCommand("Create work items", "Send notifications");
+
+            var responseResult = await _sender.Send(command, cancellationToken);
+
+            return NoContent(responseResult);
         }
     }
 }

@@ -17,12 +17,12 @@ public class TestChannelHostedServiceHandler(ITasksQueue tasksQueue)
         TestChannelHostedServiceCommand command,
         CancellationToken cancellationToken)
     {
-        TestChannelHostedServiceTask testChannelHostedServiceTask = TestChannelHostedServiceTask.Create(
+        var testChannelHostedServiceTask = TestChannelHostedServiceTask.Create(
             command.FirstOperation,
             command.SecondOperation);
 
-        _tasksQueue.QueueBackgroundTask(testChannelHostedServiceTask, cancellationToken);
+        await _tasksQueue.QueueBackgroundTaskAsync(testChannelHostedServiceTask, cancellationToken);
 
-        return await Task.FromResult(new TestChannelHostedServiceResponse());
+        return new TestChannelHostedServiceResponse();
     }
 }

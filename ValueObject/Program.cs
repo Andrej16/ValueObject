@@ -3,6 +3,7 @@ using Api.Behaviors;
 using Api.ChannelHostedService;
 using Api.Commands.Products;
 using Api.Extensions;
+using Api.Processors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
@@ -24,7 +25,10 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
-builder.Services.AddScoped<ITasksQueue, TasksQueue>();
+builder.Services.AddSingleton<ITasksQueue, TasksQueue>();
+builder.Services.AddScoped<WorkItemProcessor, TestWorkItemProcessor>();
+builder.Services.AddScoped<IBackgroundProcessorsFactory, BackgroundProcessorsFactory>();
+builder.Services.AddHostedService<WorkItemsHostedService>();
 
 var app = builder.Build();
 
@@ -32,7 +36,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.ApplyMigrations();
+    //app.ApplyMigrations();
 }
 
 app.MapPost("api/products", async (ISender sender) =>
