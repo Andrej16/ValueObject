@@ -21,32 +21,38 @@ public class WorkItemsHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        Guid taskId = default;
+        TransactionScope? transactionScope = default;
         using var scope = _serviceProvider.CreateScope();
         var processorsFactory = scope.ServiceProvider.GetRequiredService<IBackgroundProcessorsFactory>();
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            //Todo: transaction must envelope work items with the same taskId
-            //using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
             var workItem = await _tasksQueue.DequeueAsync(cancellationToken);
+            if (taskId != workItem.TaskId)
+            {
+                transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                taskId = workItem.TaskId;
+            }
 
             var processor = processorsFactory.GetProcessor(workItem.Type);
 
             var operationResult = await processor.ProcessAsync(workItem, cancellationToken);
             if (operationResult.IsFailure)
             {
+                transactionScope?.Dispose();
+                await _tasksQueue.ClearWorkItemsInTaskAsync(workItem.TaskId, cancellationToken);
+
                 _logger.LogError(
                     "Background {Processor} failed be {Reason}",
                     processor.ToString(),
                     operationResult.Error.Message);
+
+                continue;
             }
 
-            var nextWorkItemId = _tasksQueue.GetNextId();
-            if (workItem.TaskId == nextWorkItemId)
-                continue;
-
-            //transactionScope.Complete();
+            if (workItem.TaskId != _tasksQueue.GetNextId())
+                transactionScope!.Complete();
         }
     }
 }

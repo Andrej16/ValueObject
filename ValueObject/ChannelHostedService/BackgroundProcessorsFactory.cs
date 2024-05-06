@@ -17,6 +17,7 @@ public sealed class BackgroundProcessorsFactory : IBackgroundProcessorsFactory
         Type processorType = type switch
         {
             EWorkItemType.FirstOperation => typeof(TestWorkItemProcessor),
+            EWorkItemType.FailOperation => typeof(FailOperationProcessor),
             EWorkItemType.SecondOperation => typeof(TestWorkItemProcessor),
 
             _ => throw new NotImplementedException($"Processor for {type} is not implemented")

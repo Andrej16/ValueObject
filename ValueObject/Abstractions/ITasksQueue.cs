@@ -9,4 +9,6 @@ public interface ITasksQueue
     Task<WorkItem> DequeueAsync(CancellationToken cancellationToken);
 
     Guid? GetNextId();
+
+    Task<int> ClearWorkItemsInTaskAsync(Guid taskId, CancellationToken cancellationToken);
 }

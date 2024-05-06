@@ -27,6 +27,7 @@ builder.Services.AddMediatR(config =>
 
 builder.Services.AddSingleton<ITasksQueue, TasksQueue>();
 builder.Services.AddScoped<WorkItemProcessor, TestWorkItemProcessor>();
+builder.Services.AddScoped<WorkItemProcessor, FailOperationProcessor>();
 builder.Services.AddScoped<IBackgroundProcessorsFactory, BackgroundProcessorsFactory>();
 builder.Services.AddHostedService<WorkItemsHostedService>();
 

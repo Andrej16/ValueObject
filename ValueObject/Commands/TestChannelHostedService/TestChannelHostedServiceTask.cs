@@ -4,7 +4,7 @@ namespace Api.Commands.TestChannelHostedService;
 
 public class TestChannelHostedServiceTask : BackgroundTask
 {
-    private TestChannelHostedServiceTask(IEnumerable<WorkItem> workItems)
+    private TestChannelHostedServiceTask(params WorkItem[] workItems)
         : base(workItems)
     {
 
@@ -13,16 +13,11 @@ public class TestChannelHostedServiceTask : BackgroundTask
     public static TestChannelHostedServiceTask Create(string firstOperationData, string secondOperationData)
     {
         var taskId = Guid.NewGuid();
-        var firstWorkItem = new WorkItem(EWorkItemType.FirstOperation, taskId, firstOperationData);
-        var secondWorkItem = new WorkItem(EWorkItemType.SecondOperation, taskId, secondOperationData);
 
-        var workItems = new WorkItem[]
-        {
-            firstWorkItem,
-            secondWorkItem
-        };
-
-        var backgroundTask = new TestChannelHostedServiceTask(workItems);
+        var backgroundTask = new TestChannelHostedServiceTask(
+            new WorkItem(EWorkItemType.FirstOperation, taskId, firstOperationData),
+            new WorkItem(EWorkItemType.FailOperation, taskId),
+            new WorkItem(EWorkItemType.SecondOperation, taskId, secondOperationData));
 
         return backgroundTask;
     }

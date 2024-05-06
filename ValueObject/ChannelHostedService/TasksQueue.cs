@@ -32,9 +32,24 @@ public sealed class TasksQueue : ITasksQueue
 
     public Guid? GetNextId()
     {
-        if (_channel.Reader.TryPeek(out var work))
-            return work.TaskId;
+        _channel.Reader.TryPeek(out var workItem);
+            
+        return workItem?.TaskId;
+    }
 
-        return null;
+    public async Task<int> ClearWorkItemsInTaskAsync(Guid taskId, CancellationToken cancellationToken)
+    {
+        int count = default;
+
+        while(_channel.Reader.TryPeek(out var peekedWorkItem))
+        {
+            if (peekedWorkItem.TaskId != taskId)
+                break;
+
+            _ = await DequeueAsync(cancellationToken);
+            count++;
+        }
+
+        return count;
     }
 }
