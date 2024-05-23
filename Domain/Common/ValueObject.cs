@@ -75,6 +75,26 @@
             return NotEqualOperator(one, two);
         }
 
+        public static bool operator >(ValueObject one, ValueObject two)
+        {
+            if (EqualOperator(one, two))
+                return false;
+
+            var compare = one.CompareTo(two);
+
+            return compare == 1;
+        }
+
+        public static bool operator <(ValueObject one, ValueObject two)
+        {
+            if (EqualOperator(one, two))
+                return false;
+
+            var compare = one.CompareTo(two);
+
+            return compare == -1;
+        }
+
         public virtual int CompareTo(object? obj)
         {
             if (obj is null)
