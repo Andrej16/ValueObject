@@ -84,6 +84,12 @@ namespace Api.Controllers
             return FromResult(okjResult);
         }
 
+        [HttpGet("async-enumerable")]
+        public IAsyncEnumerable<int> FetchItemsAsync()
+        {
+            return FetchItems();
+        }
+
         [HttpPost]
         public async Task<ActionResult<Envelope<CreateAddressResponse>>> PostAddressAsync(
             [FromQuery] CreateAddressRequest request,
@@ -109,6 +115,16 @@ namespace Api.Controllers
             var responseResult = await _sender.Send(command, cancellationToken);
 
             return NoContent(responseResult);
+        }
+
+        private static async IAsyncEnumerable<int> FetchItems()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                await Task.Delay(1000);
+
+                yield return i;
+            }
         }
     }
 }
