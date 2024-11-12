@@ -2,6 +2,7 @@
 using Api.Commands.TestChannelHostedService;
 using Api.Common;
 using Domain.Common;
+using Domain.Constants;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,12 @@ namespace Api.Controllers
     public class TestController : ApplicationController
     {
         private readonly ISender _sender;
+        private readonly ILogger<TestController> _logger;
 
-        public TestController(ISender sender)
+        public TestController(ISender sender, ILogger<TestController> logger)
         {
             this._sender = sender;
+            _logger = logger;
         }
 
         [HttpPut]
@@ -115,6 +118,16 @@ namespace Api.Controllers
             var responseResult = await _sender.Send(command, cancellationToken);
 
             return NoContent(responseResult);
+        }
+
+        [HttpGet("logging-overview")]
+        public ActionResult<IEnumerable<string>> LoggingOverview()
+        {
+            var error = Errors.General.InternalServerError("Test Logging Overview");
+
+            _logger.LogError(LogEventConstants.ClearAttachments, error.ToString());
+
+            return new string[] { "value1", "value2" };
         }
 
         private static async IAsyncEnumerable<int> FetchItems()

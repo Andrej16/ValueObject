@@ -2,7 +2,6 @@ using Api.Abstractions;
 using Api.Behaviors;
 using Api.ChannelHostedService;
 using Api.Commands.Products;
-using Api.Extensions;
 using Api.Processors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +23,8 @@ builder.Services.AddMediatR(config =>
 
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
+
+builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddSingleton<ITasksQueue, TasksQueue>();
 builder.Services.AddScoped<WorkItemProcessor, TestWorkItemProcessor>();
