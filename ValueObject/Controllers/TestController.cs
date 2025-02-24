@@ -6,6 +6,7 @@ using Domain.Constants;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace Api.Controllers
 {
@@ -128,6 +129,47 @@ namespace Api.Controllers
             _logger.LogError(LogEventConstants.ClearAttachments, error.ToString());
 
             return new string[] { "value1", "value2" };
+        }
+
+        [HttpPost("encode-file")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> EncodeFileAsync(IFormFile formFile)
+        {
+            var filePath = Environment.CurrentDirectory + $"/{formFile.FileName}";
+
+            using var streamReader = new StreamReader(formFile.OpenReadStream());
+            var fileContent = await streamReader.ReadToEndAsync();
+
+            var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(fileContent));
+
+            using var stream = System.IO.File.Create(filePath);
+            using var streamWriter = new StreamWriter(stream);
+
+            await streamWriter.WriteAsync(base64);
+
+            return NoContent();
+        }
+
+        [HttpGet("decode-file")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> DecodeFileAsync(IEnumerable<IFormFile> formFiles)
+        {
+            foreach (var formFile in formFiles)
+            {
+                var filePath = $"{Environment.CurrentDirectory}/_decoded/{formFile.FileName}.sql";
+
+                using var streamReader = new StreamReader(formFile.OpenReadStream());
+                var fileContent = await streamReader.ReadToEndAsync();
+
+                var base64 = Convert.FromBase64String(fileContent);
+
+                using var stream = System.IO.File.Create(filePath);
+                using var streamWriter = new StreamWriter(stream);
+
+                await streamWriter.WriteAsync(Encoding.UTF8.GetString(base64));
+            }
+
+            return NoContent();
         }
 
         private static async IAsyncEnumerable<int> FetchItems()
